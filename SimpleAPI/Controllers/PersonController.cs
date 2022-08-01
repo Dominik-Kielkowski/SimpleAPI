@@ -2,6 +2,8 @@
 using SimpleAPI.Data;
 using SimpleAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using AutoMapper;
+using SimpleAPI.Services;
 
 namespace SimpleAPI.Controllers
 {
@@ -9,25 +11,26 @@ namespace SimpleAPI.Controllers
     [Route("api/[controller]")]
     public class PersonController : ControllerBase
     {
-        private readonly ApplicationDbContext _db;
+        private readonly IPersonService _service;
 
-        public PersonController(ApplicationDbContext db)
+        public PersonController(IPersonService personService)
         {
-            _db = db;
+            _service = personService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Person>>> GetAllPeople()
+        public ActionResult<IEnumerable<PersonDto>> GetAllPeople()
         {
-            return Ok(await _db.People.ToListAsync());
+            var people = _service.GetAll();
+            return Ok(people);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Person>> GetPerson(int id)
+        public ActionResult<PersonDto> GetPerson(int id)
         {
-            var person = await _db.People.FindAsync(id);
+            var person = _service.GetById(id);
 
-            if(person == null)
+            if (person == null)
             {
                 return NotFound();
             }
@@ -36,49 +39,46 @@ namespace SimpleAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<List<Person>>> AddPerson(Person person)
+        public async Task<ActionResult<List<Person>>> AddPerson([FromBody] CreatePersonDto dto)
         {
-            _db.People.Add(person);
-            await _db.SaveChangesAsync();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            return Ok(await _db.People.ToListAsync());
+            var id = _service.Create(dto);
+
+            return Created($"api/Person/{id}", null);
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<List<Person>>> DeletePerson(int id)
+        public ActionResult<List<Person>> DeletePerson([FromRoute] int id)
         {
-            var person = await _db.People.FindAsync(id);
-            
-            if(person == null)
+            var isDeleted = _service.Delete(id);
+
+            if (isDeleted)
             {
-                return NotFound();
-            }    
-
-
-            _db.People.Remove(person);
-            await _db.SaveChangesAsync();
-
-            return Ok(await _db.People.ToListAsync());
+                return NoContent();
+            }
+            return NotFound();
         }
 
-        [HttpPut]
-        public async Task<ActionResult<List<Person>>> EditPerson(Person person)
+        [HttpPut("{id}")]
+        public ActionResult<List<Person>> EditPerson([FromBody] UpdatePersonDto dto, [FromRoute] int id)
         {
-            var personToEdit = await _db.People.FindAsync(person.Id);
-
-            if(personToEdit == null)
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                return BadRequest(ModelState);
             }
 
 
-            personToEdit.Name = person.Name;
-            personToEdit.Age = person.Age;
+            var isUpdated = _service.Update(id, dto);
 
-            await _db.SaveChangesAsync();
-
-            return Ok(await _db.People.ToListAsync());
+            if (!isUpdated)
+            {
+                return NotFound();
+            }
+            return Ok();
         }
-
     }
 }

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SimpleAPI.Data;
+using SimpleAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,8 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddScoped<IPersonService, PersonService>();
 
 var app = builder.Build();
 
