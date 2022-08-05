@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SimpleAPI.Data;
 
@@ -11,9 +12,10 @@ using SimpleAPI.Data;
 namespace SimpleAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220804151442_AddlistToOccupation")]
+    partial class AddlistToOccupation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,34 +26,34 @@ namespace SimpleAPI.Migrations
 
             modelBuilder.Entity("SimpleAPI.Models.Occupation", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("OccupationId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OccupationId"), 1L, 1);
 
                     b.Property<string>("OccupationName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("OccupationId");
 
                     b.ToTable("Occupations");
 
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            OccupationId = 1,
                             OccupationName = "Doctor"
                         },
                         new
                         {
-                            Id = 2,
+                            OccupationId = 2,
                             OccupationName = "Firefighter"
                         },
                         new
                         {
-                            Id = 3,
+                            OccupationId = 3,
                             OccupationName = "Policeman"
                         });
                 });
@@ -74,10 +76,6 @@ namespace SimpleAPI.Migrations
                     b.Property<int?>("OccupationId")
                         .HasColumnType("int");
 
-                    b.Property<string>("OccupationName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("PhoneNumber")
                         .HasColumnType("int");
 
@@ -86,9 +84,7 @@ namespace SimpleAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OccupationId")
-                        .IsUnique()
-                        .HasFilter("[OccupationId] IS NOT NULL");
+                    b.HasIndex("OccupationId");
 
                     b.ToTable("People");
                 });
@@ -96,16 +92,15 @@ namespace SimpleAPI.Migrations
             modelBuilder.Entity("SimpleAPI.Models.Person", b =>
                 {
                     b.HasOne("SimpleAPI.Models.Occupation", "Occupation")
-                        .WithOne("Person")
-                        .HasForeignKey("SimpleAPI.Models.Person", "OccupationId");
+                        .WithMany("People")
+                        .HasForeignKey("OccupationId");
 
                     b.Navigation("Occupation");
                 });
 
             modelBuilder.Entity("SimpleAPI.Models.Occupation", b =>
                 {
-                    b.Navigation("Person")
-                        .IsRequired();
+                    b.Navigation("People");
                 });
 #pragma warning restore 612, 618
         }

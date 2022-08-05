@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using SimpleAPI.Data;
 using SimpleAPI.Models;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace SimpleAPI.Services
 {

@@ -22,17 +22,17 @@ namespace SimpleAPI.Data
             modelBuilder.Entity<Occupation>().HasData(
                 new Occupation
                 {
-                    OccupationId = 1,
+                    Id = 1,
                     OccupationName = "Doctor"
                 },
                 new Occupation
                 {
-                    OccupationId = 2,
+                    Id = 2,
                     OccupationName = "Firefighter"
                 },
                 new Occupation
                 {
-                    OccupationId = 3,
+                    Id = 3,
                     OccupationName = "Policeman"
                 }
                 );

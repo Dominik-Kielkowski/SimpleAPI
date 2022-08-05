@@ -5,8 +5,10 @@ namespace SimpleAPI.Models
     public class Occupation
     {
         [Key]
-        public int OccupationId { get; set; }
+        public int Id { get; set; }
         [Required]
-        public string OccupationName { get; set; } = string.Empty;
+        public string OccupationName { get; set; }
+
+        public virtual Person Person { get; set; }
     }
 }
