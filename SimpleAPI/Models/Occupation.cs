@@ -9,6 +9,6 @@ namespace SimpleAPI.Models
         [Required]
         public string OccupationName { get; set; }
 
-        public virtual Person Person { get; set; }
+        public  List<Person> People { get; set; }
     }
 }

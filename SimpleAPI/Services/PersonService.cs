@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using SimpleAPI.Data;
+﻿using SimpleAPI.Data;
 using SimpleAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,40 +7,65 @@ namespace SimpleAPI.Services
     public class PersonService : IPersonService
     {
         private readonly ApplicationDbContext _db;
-        private readonly IMapper _mapper;
+        private readonly ILogger<PersonService> _logger;
 
-        public PersonService(ApplicationDbContext db, IMapper mapper)
+        public PersonService(ApplicationDbContext db, ILogger<PersonService> logger)
         {
             _db = db;
-            _mapper = mapper;
+            _logger = logger;
         }
 
 
         public PersonDto GetById(int id)
         {
+
+            _logger.LogTrace($"Person with id: {id} GET action invoked");
+
             var person = _db.People.Include(r => r.Occupation).FirstOrDefault(r => r.Id == id);
+
+            var personDto = new PersonDto()
+            {
+                Id = person.Id,
+                Name = person.Name,
+                Age = person.Age,
+                OccupationName = person.Occupation.OccupationName
+            };
 
             if (person == null)
             {
                 return null;
             }
 
-            var result = _mapper.Map<PersonDto>(person);
-            return result;
+            return personDto;
         }
 
         public IEnumerable<PersonDto> GetAll()
         {
             var people = _db.People.Include(r => r.Occupation).ToList();
 
-            var peopleDto = _mapper.Map<List<PersonDto>>(people);
+            var peopleDto = people.Select(r => new PersonDto()
+            {
+                Id = r.Id,
+                Name = r.Name,
+                Age = r.Age,
+                OccupationName = r.Occupation.OccupationName
+                
+            });
 
             return peopleDto;
         }
 
         public int Create(CreatePersonDto dto)
         {
-            var person = _mapper.Map<Person>(dto);
+            var person = new Person() 
+            {
+                Name = dto.Name,
+                Age= dto.Age,
+                Salary = dto.Salary,
+                PhoneNumber = dto.PhoneNumber,
+                OccupationId = dto.OccupationId
+            };
+
             _db.People.Add(person);
             _db.SaveChanges();
 
@@ -76,6 +99,8 @@ namespace SimpleAPI.Services
             person.Name = dto.Name;
             person.Salary = dto.Salary;
             person.Age = dto.Age;
+            person.PhoneNumber = dto.PhoneNumber;
+            person.OccupationId = dto.OccupationId;
 
             _db.SaveChanges();
 

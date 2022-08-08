@@ -2,7 +2,6 @@
 using SimpleAPI.Data;
 using SimpleAPI.Models;
 using Microsoft.EntityFrameworkCore;
-using AutoMapper;
 using SimpleAPI.Services;
 
 namespace SimpleAPI.Controllers
@@ -39,7 +38,7 @@ namespace SimpleAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<List<Person>>> AddPerson([FromBody] CreatePersonDto dto)
+        public ActionResult<List<Person>> AddPerson([FromBody] CreatePersonDto dto)
         {
             if (!ModelState.IsValid)
             {
