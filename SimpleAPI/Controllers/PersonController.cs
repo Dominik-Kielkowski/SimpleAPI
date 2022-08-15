@@ -3,6 +3,9 @@ using SimpleAPI.Data;
 using SimpleAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using SimpleAPI.Services;
+using SimpleAPI.Dtos.UpdateDtos;
+using SimpleAPI.Dtos.CreateDtos;
+using SimpleAPI.AllDtos.Dtos;
 
 namespace SimpleAPI.Controllers
 {
@@ -21,6 +24,10 @@ namespace SimpleAPI.Controllers
         public ActionResult<IEnumerable<PersonDto>> GetAllPeople()
         {
             var people = _service.GetAll();
+
+            if (people == null)
+                return NotFound();
+
             return Ok(people);
         }
 
@@ -30,9 +37,7 @@ namespace SimpleAPI.Controllers
             var person = _service.GetById(id);
 
             if (person == null)
-            {
                 return NotFound();
-            }
 
             return Ok(person);
         }
@@ -50,18 +55,6 @@ namespace SimpleAPI.Controllers
             return Created($"api/Person/{id}", null);
         }
 
-        [HttpDelete("{id}")]
-        public ActionResult<List<Person>> DeletePerson([FromRoute] int id)
-        {
-            var isDeleted = _service.Delete(id);
-
-            if (isDeleted)
-            {
-                return NoContent();
-            }
-            return NotFound();
-        }
-
         [HttpPut("{id}")]
         public ActionResult<List<Person>> EditPerson([FromBody] UpdatePersonDto dto, [FromRoute] int id)
         {
@@ -73,11 +66,25 @@ namespace SimpleAPI.Controllers
 
             var isUpdated = _service.Update(id, dto);
 
-            if (!isUpdated)
+            if (isUpdated == null)
             {
                 return NotFound();
             }
+
             return Ok();
+        }
+
+        [HttpDelete("{id}")]
+        public ActionResult<List<Person>> DeletePerson([FromRoute] int id)
+        {
+            var isDeleted = _service.Delete(id);
+
+            if (isDeleted == null)
+            {
+                return NoContent();
+            }
+
+            return NotFound();
         }
     }
 }

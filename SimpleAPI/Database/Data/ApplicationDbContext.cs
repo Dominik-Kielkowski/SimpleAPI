@@ -17,23 +17,23 @@ namespace SimpleAPI.Data
         {
             modelBuilder.Entity<Person>().Property(r => r.Name).IsRequired();
 
-            modelBuilder.Entity<Occupation>().Property(r => r.OccupationName).IsRequired();
+            modelBuilder.Entity<Occupation>().Property(r => r.Name).IsRequired();
 
             modelBuilder.Entity<Occupation>().HasData(
                 new Occupation
                 {
                     Id = 1,
-                    OccupationName = "Doctor"
+                    Name = "Doctor"
                 },
                 new Occupation
                 {
                     Id = 2,
-                    OccupationName = "Firefighter"
+                    Name = "Firefighter"
                 },
                 new Occupation
                 {
                     Id = 3,
-                    OccupationName = "Policeman"
+                    Name = "Policeman"
                 }
                 );
         }

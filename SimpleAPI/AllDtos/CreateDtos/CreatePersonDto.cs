@@ -1,4 +1,4 @@
-﻿namespace SimpleAPI.Models
+﻿namespace SimpleAPI.Dtos.CreateDtos
 {
     public class CreatePersonDto
     {

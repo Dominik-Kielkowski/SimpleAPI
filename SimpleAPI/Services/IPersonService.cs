@@ -1,4 +1,6 @@
-﻿using SimpleAPI.Models;
+﻿using SimpleAPI.AllDtos.Dtos;
+using SimpleAPI.Dtos.CreateDtos;
+using SimpleAPI.Dtos.UpdateDtos;
 
 namespace SimpleAPI.Services
 {
@@ -7,7 +9,7 @@ namespace SimpleAPI.Services
         int Create(CreatePersonDto dto);
         IEnumerable<PersonDto> GetAll();
         PersonDto GetById(int id);
-        bool Delete(int id);
-        bool Update(int id, UpdatePersonDto dto);
+        bool? Delete(int id);
+        bool? Update(int id, UpdatePersonDto dto);
     }
 }

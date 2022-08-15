@@ -1,6 +1,9 @@
 ﻿using SimpleAPI.Data;
 using SimpleAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using SimpleAPI.Dtos.UpdateDtos;
+using SimpleAPI.Dtos.CreateDtos;
+using SimpleAPI.AllDtos.Dtos;
 
 namespace SimpleAPI.Services
 {
@@ -15,6 +18,24 @@ namespace SimpleAPI.Services
             _logger = logger;
         }
 
+        public IEnumerable<PersonDto> GetAll()
+        {
+            var people = _db.People.Include(r => r.Occupation).ToList();
+
+            if (people == null)
+                return null;
+
+            var peopleDto = people.Select(r => new PersonDto()
+            {
+                Id = r.Id,
+                Name = r.Name,
+                Age = r.Age,
+                OccupationName = r.Occupation.Name
+
+            });
+
+            return peopleDto;
+        }
 
         public PersonDto GetById(int id)
         {
@@ -23,36 +44,18 @@ namespace SimpleAPI.Services
 
             var person = _db.People.Include(r => r.Occupation).FirstOrDefault(r => r.Id == id);
 
+            if (person == null)
+                return null;
+
             var personDto = new PersonDto()
             {
                 Id = person.Id,
                 Name = person.Name,
                 Age = person.Age,
-                OccupationName = person.Occupation.OccupationName
+                OccupationName = person.Occupation.Name
             };
 
-            if (person == null)
-            {
-                return null;
-            }
-
             return personDto;
-        }
-
-        public IEnumerable<PersonDto> GetAll()
-        {
-            var people = _db.People.Include(r => r.Occupation).ToList();
-
-            var peopleDto = people.Select(r => new PersonDto()
-            {
-                Id = r.Id,
-                Name = r.Name,
-                Age = r.Age,
-                OccupationName = r.Occupation.OccupationName
-                
-            });
-
-            return peopleDto;
         }
 
         public int Create(CreatePersonDto dto)
@@ -72,28 +75,13 @@ namespace SimpleAPI.Services
             return person.Id;
         }
 
-        public bool Delete(int id)
+        public bool? Update(int id, UpdatePersonDto dto)
         {
             var person = _db.People.FirstOrDefault(r => r.Id == id);
 
             if (person == null)
             {
-                return false;
-            }
-
-            _db.People.Remove(person);
-            _db.SaveChanges();
-
-            return true;
-        }
-
-        public bool Update(int id, UpdatePersonDto dto)
-        {
-            var person = _db.People.FirstOrDefault(r => r.Id == id);
-
-            if(person == null)
-            {
-                return false;
+                return null;
             }
 
             person.Name = dto.Name;
@@ -106,6 +94,21 @@ namespace SimpleAPI.Services
 
             return true;
 
+        }
+
+        public bool? Delete(int id)
+        {
+            var person = _db.People.FirstOrDefault(r => r.Id == id);
+
+            if (person == null)
+            {
+                return null;
+            }
+
+            _db.People.Remove(person);
+            _db.SaveChanges();
+
+            return true;
         }
     }
 }

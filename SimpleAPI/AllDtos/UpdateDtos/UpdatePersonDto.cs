@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SimpleAPI.Models
+namespace SimpleAPI.Dtos.UpdateDtos
 {
     public class UpdatePersonDto
     {

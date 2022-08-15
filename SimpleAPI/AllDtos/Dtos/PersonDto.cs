@@ -1,4 +1,4 @@
-﻿namespace SimpleAPI.Models
+﻿namespace SimpleAPI.AllDtos.Dtos
 {
     public class PersonDto
     {

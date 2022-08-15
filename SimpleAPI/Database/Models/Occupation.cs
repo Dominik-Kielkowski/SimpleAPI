@@ -7,7 +7,7 @@ namespace SimpleAPI.Models
         [Key]
         public int Id { get; set; }
         [Required]
-        public string OccupationName { get; set; }
+        public string Name { get; set; }
 
         public  List<Person> People { get; set; }
     }
