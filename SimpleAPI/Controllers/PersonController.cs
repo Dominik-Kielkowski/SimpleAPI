@@ -21,9 +21,9 @@ namespace SimpleAPI.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<PersonDto>> GetAllPeople()
+        public ActionResult<IEnumerable<PersonDto>> GetAllPeople([FromQuery] PersonQuery query)
         {
-            var people = _service.GetAll();
+            var people = _service.GetAll(query);
 
             if (people == null)
                 return NotFound();

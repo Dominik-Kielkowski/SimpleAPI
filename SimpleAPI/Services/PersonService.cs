@@ -18,9 +18,13 @@ namespace SimpleAPI.Services
             _logger = logger;
         }
 
-        public IEnumerable<PersonDto> GetAll()
+        public IEnumerable<PersonDto> GetAll(PersonQuery query)
         {
-            var people = _db.People.Include(r => r.Occupation).ToList();
+            var people = _db.People.Include(r => r.Occupation)
+                .Where(r => query.SearchPhrase != null &&  (r.Name.ToLower().Contains(query.SearchPhrase.ToLower())))
+                .Skip(query.PageSize * (query.PageNumber - 1))
+                .Take(query.PageSize)
+                .ToList();
 
             if (people == null)
                 return null;
