@@ -1,4 +1,6 @@
-﻿namespace SimpleAPI.Dtos.CreateDtos
+﻿using SimpleAPI.AllDtos.CreateDtos;
+
+namespace SimpleAPI.Dtos.CreateDtos
 {
     public class CreatePersonDto
     {
@@ -7,5 +9,6 @@
         public int Salary { get; set; }
         public int PhoneNumber { get; set; }
         public int OccupationId { get; set; }
+        public List<AddressDto> Address { get; set; }
     }
 }

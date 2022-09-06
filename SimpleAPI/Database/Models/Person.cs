@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SimpleAPI.Database.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace SimpleAPI.Models
 {
@@ -12,8 +13,12 @@ namespace SimpleAPI.Models
         public int Age { get; set; }
         public int Salary { get; set; }
         public int PhoneNumber { get; set; }
+        public int? CreatedById { get; set; }
+        public virtual User CreatedBy { get; set;  }
 
         public int? OccupationId { get; set; }
         public virtual Occupation Occupation { get; set; }
+
+        public List<Address> Addresses { get; set; }
     }
 }

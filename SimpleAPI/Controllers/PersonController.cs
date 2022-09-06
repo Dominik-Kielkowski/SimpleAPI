@@ -6,11 +6,14 @@ using SimpleAPI.Services;
 using SimpleAPI.Dtos.UpdateDtos;
 using SimpleAPI.Dtos.CreateDtos;
 using SimpleAPI.AllDtos.Dtos;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace SimpleAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class PersonController : ControllerBase
     {
         private readonly IPersonService _service;
@@ -21,6 +24,7 @@ namespace SimpleAPI.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult<IEnumerable<PersonDto>> GetAllPeople([FromQuery] PersonQuery query)
         {
             var people = _service.GetAll(query);
@@ -32,6 +36,7 @@ namespace SimpleAPI.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Policy = "Nationality, AtLeast20")]
         public ActionResult<PersonDto> GetPerson(int id)
         {
             var person = _service.GetById(id);
@@ -43,6 +48,7 @@ namespace SimpleAPI.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public ActionResult<List<Person>> AddPerson([FromBody] CreatePersonDto dto)
         {
             if (!ModelState.IsValid)
@@ -50,6 +56,7 @@ namespace SimpleAPI.Controllers
                 return BadRequest(ModelState);
             }
 
+            var userId = int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value);
             var id = _service.Create(dto);
 
             return Created($"api/Person/{id}", null);

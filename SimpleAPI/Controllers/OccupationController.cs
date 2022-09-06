@@ -2,6 +2,7 @@
 using SimpleAPI.AllDtos.Dtos;
 using SimpleAPI.AllDtos.UpdateDtos;
 using SimpleAPI.Dtos.CreateDtos;
+using SimpleAPI.Exceptions;
 using SimpleAPI.Services;
 
 namespace SimpleAPI.Controllers
@@ -22,9 +23,6 @@ namespace SimpleAPI.Controllers
         {
             var OccupationList = _service.GetAllOccupations();
 
-            if (OccupationList == null)
-                return NoContent();
-
             return Ok(OccupationList);
         }
 
@@ -33,9 +31,6 @@ namespace SimpleAPI.Controllers
         public ActionResult<OccupationDto> GetOccupationById([FromRoute] int id)
         {
             var Occupation = _service.GetOccupationById(id);
-
-            if (Occupation == null)
-                return NoContent();
 
             return Ok(Occupation);
         }
@@ -54,11 +49,6 @@ namespace SimpleAPI.Controllers
         {
             var updatedOccupationId = _service.UpdateOccupation(id, updateOccupationDto);
 
-            if (updatedOccupationId == null)
-            {
-                return BadRequest();
-            }
-
             return Created($"api/Occupation/{updatedOccupationId}",null);
         }
 
@@ -66,14 +56,9 @@ namespace SimpleAPI.Controllers
         [Route("{id}")]
         public ActionResult DeleteOccupation([FromRoute] int id)
         {
-            var occupationRemovalStatus = _service.DeleteOccupation(id);
+            _service.DeleteOccupation(id);
 
-            if (occupationRemovalStatus == false)
-            {
-                return BadRequest();
-            }
-
-            return Ok();
+            return NoContent();
         }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SimpleAPI.Data;
 
@@ -11,9 +12,10 @@ using SimpleAPI.Data;
 namespace SimpleAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220827014914_MakeSomePropInUserNullable")]
+    partial class MakeSomePropInUserNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,39 +23,6 @@ namespace SimpleAPI.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
-
-            modelBuilder.Entity("SimpleAPI.Database.Models.Address", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("AddressType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("PersonId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Street")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PersonId");
-
-                    b.ToTable("Address");
-                });
 
             modelBuilder.Entity("SimpleAPI.Database.Models.Role", b =>
                 {
@@ -172,9 +141,6 @@ namespace SimpleAPI.Migrations
                     b.Property<int>("Age")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CreatedById")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -190,22 +156,9 @@ namespace SimpleAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedById");
-
                     b.HasIndex("OccupationId");
 
                     b.ToTable("People");
-                });
-
-            modelBuilder.Entity("SimpleAPI.Database.Models.Address", b =>
-                {
-                    b.HasOne("SimpleAPI.Models.Person", "Person")
-                        .WithMany("Addresses")
-                        .HasForeignKey("PersonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Person");
                 });
 
             modelBuilder.Entity("SimpleAPI.Database.Models.User", b =>
@@ -221,15 +174,9 @@ namespace SimpleAPI.Migrations
 
             modelBuilder.Entity("SimpleAPI.Models.Person", b =>
                 {
-                    b.HasOne("SimpleAPI.Database.Models.User", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById");
-
                     b.HasOne("SimpleAPI.Models.Occupation", "Occupation")
                         .WithMany("People")
                         .HasForeignKey("OccupationId");
-
-                    b.Navigation("CreatedBy");
 
                     b.Navigation("Occupation");
                 });
@@ -237,11 +184,6 @@ namespace SimpleAPI.Migrations
             modelBuilder.Entity("SimpleAPI.Models.Occupation", b =>
                 {
                     b.Navigation("People");
-                });
-
-            modelBuilder.Entity("SimpleAPI.Models.Person", b =>
-                {
-                    b.Navigation("Addresses");
                 });
 #pragma warning restore 612, 618
         }

@@ -17,28 +17,29 @@ namespace SimpleAPI
 
         public void Seed()
         {
-            if (_db.Database.CanConnect())
+            if (_db.Database.CanConnect() && !_db.People.Any())
             {
-                var people = GetPeople();
-                _db.People.AddRange(people);
+                var getPeople = GetPeople();
+                _db.People.AddRange(getPeople);
                 _db.SaveChanges();
             }
         }
 
         private IEnumerable<Person> GetPeople()
         {
-            int randomValue = random.Next(0, names.Length);
             List<Person> people = new List<Person>();
 
             foreach(var x in Enumerable.Range(0,100))
             {
+                int randomValue = random.Next(0, names.Length);
+
                 var person = new Person()
                 {
                     Name = names[randomValue],
                     Age = random.Next(18, 100),
                     Salary = random.Next(1000, 999999),
                     PhoneNumber = random.Next(100000000, 999999999),
-                    OccupationId = random.Next(0, 3)
+                    OccupationId = random.Next(1, 4)
                 };
                 people.Add(person);
             }

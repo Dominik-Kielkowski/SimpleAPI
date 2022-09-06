@@ -4,6 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using SimpleAPI.Dtos.UpdateDtos;
 using SimpleAPI.Dtos.CreateDtos;
 using SimpleAPI.AllDtos.Dtos;
+using System.Linq.Expressions;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using SimpleAPI.Authorization;
+using SimpleAPI.Database.Models;
 
 namespace SimpleAPI.Services
 {
@@ -11,20 +16,43 @@ namespace SimpleAPI.Services
     {
         private readonly ApplicationDbContext _db;
         private readonly ILogger<PersonService> _logger;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly IUserContextService _userContextService;
 
-        public PersonService(ApplicationDbContext db, ILogger<PersonService> logger)
+        public PersonService(ApplicationDbContext db, ILogger<PersonService> logger, IAuthorizationService authorizationService, IUserContextService userContextService)
         {
             _db = db;
             _logger = logger;
+            _authorizationService = authorizationService;
+            _userContextService = userContextService;
         }
 
-        public IEnumerable<PersonDto> GetAll(PersonQuery query)
+        public PagedResult<PersonDto> GetAll(PersonQuery query)
         {
-            var people = _db.People.Include(r => r.Occupation)
-                .Where(r => query.SearchPhrase != null &&  (r.Name.ToLower().Contains(query.SearchPhrase.ToLower())))
+            var baseQuery = _db.People.Include(r => r.Occupation)
+                .Where(r => query.SearchPhrase == null || (r.Name.ToLower().Contains(query.SearchPhrase.ToLower())));
+
+            if(!string.IsNullOrEmpty(query.SortBy))
+            {
+                var columnsSelector = new Dictionary<string, Expression<Func<Person, object>>>
+                {
+                    { nameof(Person.Name), r => r.Name },
+                    {nameof(Person.Occupation), r => r.Occupation }
+                };
+
+                var selectedColumn = columnsSelector[query.SortBy];
+
+                baseQuery = query.SortDirection == SortDirection.Ascending
+                    ? baseQuery.OrderBy(selectedColumn)
+                    : baseQuery.OrderByDescending(selectedColumn);
+            }
+
+            var people = baseQuery
                 .Skip(query.PageSize * (query.PageNumber - 1))
                 .Take(query.PageSize)
                 .ToList();
+
+            var totalItemsCount = baseQuery.Count();
 
             if (people == null)
                 return null;
@@ -35,10 +63,11 @@ namespace SimpleAPI.Services
                 Name = r.Name,
                 Age = r.Age,
                 OccupationName = r.Occupation.Name
+            }).ToList();
 
-            });
+            var result = new PagedResult<PersonDto>( peopleDto, totalItemsCount ,query.PageSize,query.PageNumber);
 
-            return peopleDto;
+            return result;
         }
 
         public PersonDto GetById(int id)
@@ -64,14 +93,17 @@ namespace SimpleAPI.Services
 
         public int Create(CreatePersonDto dto)
         {
-            var person = new Person() 
+            var person = new Person()
             {
                 Name = dto.Name,
-                Age= dto.Age,
+                Age = dto.Age,
                 Salary = dto.Salary,
                 PhoneNumber = dto.PhoneNumber,
-                OccupationId = dto.OccupationId
+                OccupationId = dto.OccupationId,
+                Addresses = dto.Address
             };
+
+            person.CreatedById = _userContextService.GetUserId;
 
             _db.People.Add(person);
             _db.SaveChanges();
@@ -84,6 +116,14 @@ namespace SimpleAPI.Services
             var person = _db.People.FirstOrDefault(r => r.Id == id);
 
             if (person == null)
+            {
+                return null;
+            }
+
+            var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, person,
+                new ResourceOperationRequirement(ResourceOperation.Update)).Result;
+
+            if(!authorizationResult.Succeeded)
             {
                 return null;
             }
@@ -105,6 +145,14 @@ namespace SimpleAPI.Services
             var person = _db.People.FirstOrDefault(r => r.Id == id);
 
             if (person == null)
+            {
+                return null;
+            }
+
+            var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, person,
+               new ResourceOperationRequirement(ResourceOperation.Delete)).Result;
+
+            if (!authorizationResult.Succeeded)
             {
                 return null;
             }

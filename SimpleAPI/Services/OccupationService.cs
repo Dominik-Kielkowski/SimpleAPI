@@ -4,6 +4,7 @@ using SimpleAPI.Data;
 using SimpleAPI.Dtos.CreateDtos;
 using SimpleAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using SimpleAPI.Exceptions;
 
 namespace SimpleAPI.Services
 {
@@ -20,7 +21,7 @@ namespace SimpleAPI.Services
             var occupationList = _db.Occupations.Include(r => r.People).ToList();
 
             if (occupationList == null)
-                return null;
+                throw new NotFoundException("Occupation not found");
 
             var occupationDtoList = occupationList.Select(r => new OccupationDto()
             {
@@ -37,7 +38,7 @@ namespace SimpleAPI.Services
             var occupation = _db.Occupations.Include(r => r.People).FirstOrDefault(r => r.Id == id);
 
             if (occupation == null)
-                return null;
+                throw new NotFoundException("Occupation not found");
 
             var occupationDto = new OccupationDto()
             {
@@ -62,12 +63,12 @@ namespace SimpleAPI.Services
             return occupation.Id;
         }
 
-        public int? UpdateOccupation(int id, UpdateOccupationDto updateOccupationDto)
+        public int UpdateOccupation(int id, UpdateOccupationDto updateOccupationDto)
         {
             var occupation = _db.Occupations.FirstOrDefault(r => r.Id == id);
 
             if (occupation == null)
-                return null;
+                throw new NotFoundException("Occupation not found");
 
             occupation.Name = updateOccupationDto.Name;
 
@@ -76,17 +77,15 @@ namespace SimpleAPI.Services
             return occupation.Id;    
         }
 
-        public bool DeleteOccupation(int id)
+        public void DeleteOccupation(int id)
         {
             var occupation = _db.Occupations.FirstOrDefault(r => r.Id == id);
 
             if (occupation == null)
-                return false;
+                throw new NotFoundException("Occupation not found");
 
             _db.Remove(occupation);
             _db.SaveChanges();
-
-            return true;
         }
     }
 }

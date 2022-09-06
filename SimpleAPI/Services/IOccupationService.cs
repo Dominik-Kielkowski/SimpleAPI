@@ -10,7 +10,7 @@ namespace SimpleAPI.Services
         IEnumerable<OccupationDto> GetAllOccupations();
         OccupationDto GetOccupationById(int id);
         int AddOccupationToDatabase(CreateOccupationDto occupationDto);
-        int? UpdateOccupation(int id, UpdateOccupationDto updateOccupationDto);
-        bool DeleteOccupation(int id);
+        int UpdateOccupation(int id, UpdateOccupationDto updateOccupationDto);
+        void DeleteOccupation(int id);
     }
 }
