@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using SimpleAPI.Authorization;
 using SimpleAPI.Database.Models;
+using SimpleAPI.Exceptions;
+using SimpleAPI.Queries;
 
 namespace SimpleAPI.Services
 {
@@ -27,7 +29,7 @@ namespace SimpleAPI.Services
             _userContextService = userContextService;
         }
 
-        public PagedResult<PersonDto> GetAll(PersonQuery query)
+        public PagedResult<PersonDto> GetAllPeople(PersonQuery query)
         {
             var baseQuery = _db.People.Include(r => r.Occupation)
                 .Where(r => query.SearchPhrase == null || (r.Name.ToLower().Contains(query.SearchPhrase.ToLower())));
@@ -55,7 +57,7 @@ namespace SimpleAPI.Services
             var totalItemsCount = baseQuery.Count();
 
             if (people == null)
-                return null;
+                throw new NotFoundException("People not found");
 
             var peopleDto = people.Select(r => new PersonDto()
             {
@@ -70,7 +72,7 @@ namespace SimpleAPI.Services
             return result;
         }
 
-        public PersonDto GetById(int id)
+        public PersonDto GetPersonById(int id)
         {
 
             _logger.LogTrace($"Person with id: {id} GET action invoked");
@@ -78,7 +80,7 @@ namespace SimpleAPI.Services
             var person = _db.People.Include(r => r.Occupation).FirstOrDefault(r => r.Id == id);
 
             if (person == null)
-                return null;
+                throw new NotFoundException("Person not found");
 
             var personDto = new PersonDto()
             {
@@ -91,7 +93,7 @@ namespace SimpleAPI.Services
             return personDto;
         }
 
-        public int Create(CreatePersonDto dto)
+        public int AddPersonToDatabase(CreatePersonDto dto)
         {
             var person = new Person()
             {
@@ -100,7 +102,17 @@ namespace SimpleAPI.Services
                 Salary = dto.Salary,
                 PhoneNumber = dto.PhoneNumber,
                 OccupationId = dto.OccupationId,
-                Addresses = dto.Address
+                Addresses = new  List<Address>
+                {
+                    new Address
+                    {
+                        IsActive = true,
+                        AddressType = "a",
+                        City = "b",
+                        Street = "c"
+                    }
+                }
+       
             };
 
             person.CreatedById = _userContextService.GetUserId;
@@ -111,13 +123,13 @@ namespace SimpleAPI.Services
             return person.Id;
         }
 
-        public bool? Update(int id, UpdatePersonDto dto)
+        public bool? UpdatePerson(int id, UpdatePersonDto dto)
         {
             var person = _db.People.FirstOrDefault(r => r.Id == id);
 
             if (person == null)
             {
-                return null;
+                throw new NotFoundException("People not found");
             }
 
             var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, person,
@@ -140,13 +152,13 @@ namespace SimpleAPI.Services
 
         }
 
-        public bool? Delete(int id)
+        public bool? DeletePerson(int id)
         {
             var person = _db.People.FirstOrDefault(r => r.Id == id);
 
             if (person == null)
             {
-                return null;
+                throw new NotFoundException("People not found");
             }
 
             var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, person,

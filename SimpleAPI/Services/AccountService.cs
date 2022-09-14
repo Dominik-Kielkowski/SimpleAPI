@@ -5,6 +5,7 @@ using SimpleAPI.AllDtos.CreateDtos;
 using SimpleAPI.AllDtos.Dtos;
 using SimpleAPI.Data;
 using SimpleAPI.Database.Models;
+using SimpleAPI.Validators;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -28,6 +29,8 @@ namespace SimpleAPI.Services
         {
             var newUser = new User()
             {
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
                 Email = dto.Email,
                 DateOfBirth = dto.DateOfBirth,
                 Nationality = dto.Nationality,

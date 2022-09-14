@@ -15,6 +15,7 @@ using System.Text;
 using SimpleAPI.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using SimpleAPI.Middleware;
+using SimpleAPI.Seeders;
 
 var builder = WebApplication.CreateBuilder(args);
 

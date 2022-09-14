@@ -1,4 +1,4 @@
-﻿namespace SimpleAPI
+﻿namespace SimpleAPI.Queries
 {
     public class PagedResult<T>
     {
@@ -14,7 +14,7 @@
             TotalItemsCount = totalItemsCount;
             ItemsFrom = pageSize * (pageNumber - 1) + 1;
             ItemsTo = ItemsFrom + pageSize - 1;
-            TotalPages = (int)Math.Ceiling(totalItemsCount /(double)pageSize);
+            TotalPages = (int)Math.Ceiling(totalItemsCount / (double)pageSize);
         }
     }
 }

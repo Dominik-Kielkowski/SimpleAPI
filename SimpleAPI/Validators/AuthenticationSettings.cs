@@ -1,4 +1,4 @@
-﻿namespace SimpleAPI
+﻿namespace SimpleAPI.Validators
 {
     public class AuthenticationSettings
     {

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SimpleAPI.AllDtos.Dtos;
 using SimpleAPI.AllDtos.UpdateDtos;
 using SimpleAPI.Dtos.CreateDtos;
@@ -9,6 +10,7 @@ namespace SimpleAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin,Manager")]
     public class OccupationController : ControllerBase
     {
         private readonly IOccupationService _service;
@@ -19,6 +21,7 @@ namespace SimpleAPI.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult<IEnumerable<OccupationDto>> GetAllOccupations()
         {
             var OccupationList = _service.GetAllOccupations();
@@ -28,6 +31,7 @@ namespace SimpleAPI.Controllers
 
         [HttpGet]
         [Route("{id}")]
+        [AllowAnonymous]
         public ActionResult<OccupationDto> GetOccupationById([FromRoute] int id)
         {
             var Occupation = _service.GetOccupationById(id);

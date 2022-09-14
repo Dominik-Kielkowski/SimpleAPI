@@ -1,7 +1,7 @@
 ﻿using SimpleAPI.Data;
 using SimpleAPI.Models;
 
-namespace SimpleAPI
+namespace SimpleAPI.Seeders
 {
     public class PeopleSeeder
     {
@@ -29,7 +29,7 @@ namespace SimpleAPI
         {
             List<Person> people = new List<Person>();
 
-            foreach(var x in Enumerable.Range(0,100))
+            foreach (var x in Enumerable.Range(0, 100))
             {
                 int randomValue = random.Next(0, names.Length);
 

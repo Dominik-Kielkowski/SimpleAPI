@@ -8,6 +8,7 @@ using SimpleAPI.Dtos.CreateDtos;
 using SimpleAPI.AllDtos.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using SimpleAPI.Queries;
 
 namespace SimpleAPI.Controllers
 {
@@ -27,37 +28,25 @@ namespace SimpleAPI.Controllers
         [AllowAnonymous]
         public ActionResult<IEnumerable<PersonDto>> GetAllPeople([FromQuery] PersonQuery query)
         {
-            var people = _service.GetAll(query);
-
-            if (people == null)
-                return NotFound();
+            var people = _service.GetAllPeople(query);
 
             return Ok(people);
         }
 
         [HttpGet("{id}")]
-        [Authorize(Policy = "Nationality, AtLeast20")]
+        [AllowAnonymous]
         public ActionResult<PersonDto> GetPerson(int id)
         {
-            var person = _service.GetById(id);
-
-            if (person == null)
-                return NotFound();
+            var person = _service.GetPersonById(id);
 
             return Ok(person);
         }
 
         [HttpPost]
-        [AllowAnonymous]
         public ActionResult<List<Person>> AddPerson([FromBody] CreatePersonDto dto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             var userId = int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value);
-            var id = _service.Create(dto);
+            var id = _service.AddPersonToDatabase(dto);
 
             return Created($"api/Person/{id}", null);
         }
@@ -65,18 +54,7 @@ namespace SimpleAPI.Controllers
         [HttpPut("{id}")]
         public ActionResult<List<Person>> EditPerson([FromBody] UpdatePersonDto dto, [FromRoute] int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-
-            var isUpdated = _service.Update(id, dto);
-
-            if (isUpdated == null)
-            {
-                return NotFound();
-            }
+            var isUpdated = _service.UpdatePerson(id, dto);
 
             return Ok();
         }
@@ -84,12 +62,7 @@ namespace SimpleAPI.Controllers
         [HttpDelete("{id}")]
         public ActionResult<List<Person>> DeletePerson([FromRoute] int id)
         {
-            var isDeleted = _service.Delete(id);
-
-            if (isDeleted == null)
-            {
-                return NoContent();
-            }
+            var isDeleted = _service.DeletePerson(id);
 
             return NotFound();
         }

@@ -1,4 +1,4 @@
-﻿namespace SimpleAPI
+﻿namespace SimpleAPI.Queries
 {
     public enum SortDirection
     {
