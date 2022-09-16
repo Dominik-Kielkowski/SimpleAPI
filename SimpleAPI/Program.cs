@@ -16,6 +16,7 @@ using SimpleAPI.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using SimpleAPI.Middleware;
 using SimpleAPI.Seeders;
+using SimpleAPI.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,6 +59,7 @@ builder.Services.AddControllers().AddFluentValidation();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IPersonService, PersonService>();
+builder.Services.AddScoped<IAddressService, AddressService>();
 builder.Services.AddScoped<IOccupationService, OccupationService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();

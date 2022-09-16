@@ -15,7 +15,8 @@ namespace SimpleAPI.Data
         public DbSet<Occupation> Occupations { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
-
+        public DbSet<AddressType> AddressType { get; set; }
+        public DbSet<Address> Address { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -60,6 +61,24 @@ namespace SimpleAPI.Data
                 {
                     Id = 3,
                     Name = "Admin"
+                }
+                );
+
+            modelBuilder.Entity<AddressType>().HasData(
+                new AddressType
+                {
+                    Id = 1,
+                    Type = "Home"
+                },
+                new AddressType
+                {
+                    Id = 2,
+                    Type = "Work"
+                },
+                new AddressType
+                {
+                    Id = 3,
+                    Type = "Temporary"
                 }
                 );
         }

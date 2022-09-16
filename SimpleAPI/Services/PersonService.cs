@@ -107,7 +107,7 @@ namespace SimpleAPI.Services
                     new Address
                     {
                         IsActive = true,
-                        AddressType = "a",
+                        AddressTypeId = 0,
                         City = "b",
                         Street = "c"
                     }

@@ -9,7 +9,8 @@ namespace SimpleAPI.Database.Models
         public int Id { get; set; }
         public string City { get; set; }
         public string Street { get; set; }
-        public string AddressType { get; set; }
+        public int AddressTypeId { get; set; }
+        public virtual AddressType AddressType { get; set; }
         public bool IsActive { get; set; }
 
         public int PersonId { get; set; }
