@@ -1,4 +1,5 @@
 ﻿using SimpleAPI.AllDtos.CreateDtos;
+using SimpleAPI.AllDtos.UpdateDtos;
 using SimpleAPI.Data;
 using SimpleAPI.Database.Models;
 using SimpleAPI.Exceptions;
@@ -15,7 +16,7 @@ namespace SimpleAPI.Services
 
         }
 
-        public int AddAddressToPerson(AddressDto dto)
+        public void AddAddressToPerson(AddressDto dto)
         {
             var Address = new Address
             {
@@ -27,7 +28,7 @@ namespace SimpleAPI.Services
             };
 
 
-            if ((_db.Address.Where(r => r.PersonId == dto.PersonId && r.IsActive == true).ToList().Count != 0) && dto.IsActive == true)
+            if ((_db.Address.Any(r => r.PersonId == dto.PersonId && r.IsActive == true)) && dto.IsActive == true)
             {
                 throw new Exception();
             };
@@ -35,8 +36,29 @@ namespace SimpleAPI.Services
 
             _db.Add(Address);
             _db.SaveChanges();
+        }
 
-            return Address.Id;
+        public void UpdateAddress(int id, UpdateAddressDto dto)
+        {
+            var address = _db.Address.FirstOrDefault(r => r.Id == id);
+
+            if (address == null)
+            {
+                throw new AlreadyActiveException("Only one address can be active at once");
+            };
+
+            address.Street = dto.Street;
+            address.City = dto.City;
+            address.AddressTypeId = dto.AddressTypeId;
+            address.IsActive = dto.IsActive;
+            
+
+            if ((_db.Address.Any(r => r.PersonId == address.PersonId && r.IsActive == true)) && dto.IsActive == true)
+            {
+                throw new AlreadyActiveException("Only one address can be active at once");
+            };
+
+            _db.SaveChanges();
         }
     }
 }

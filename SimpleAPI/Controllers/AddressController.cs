@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SimpleAPI.AllDtos.CreateDtos;
+using SimpleAPI.AllDtos.UpdateDtos;
 using SimpleAPI.Services;
 
 namespace SimpleAPI.Controllers
@@ -19,6 +20,13 @@ namespace SimpleAPI.Controllers
         public IActionResult AddAddressToPerson([FromBody] AddressDto dto)
         {
             _service.AddAddressToPerson(dto);
+            return Ok();
+        }
+
+        [HttpPut]
+        public IActionResult UpdateAddress(int id, UpdateAddressDto dto)
+        {
+            _service.UpdateAddress(id, dto);
             return Ok();
         }
     }
