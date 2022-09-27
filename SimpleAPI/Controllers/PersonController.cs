@@ -9,6 +9,7 @@ using SimpleAPI.AllDtos.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using SimpleAPI.Queries;
+using SimpleAPI.AllDtos.CreateDtos;
 
 namespace SimpleAPI.Controllers
 {

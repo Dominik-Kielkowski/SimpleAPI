@@ -1,4 +1,5 @@
-﻿using SimpleAPI.AllDtos.Dtos;
+﻿using SimpleAPI.AllDtos.CreateDtos;
+using SimpleAPI.AllDtos.Dtos;
 using SimpleAPI.Dtos.CreateDtos;
 using SimpleAPI.Dtos.UpdateDtos;
 using SimpleAPI.Queries;

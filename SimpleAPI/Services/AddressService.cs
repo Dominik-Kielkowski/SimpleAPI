@@ -1,4 +1,5 @@
-﻿using SimpleAPI.AllDtos.CreateDtos;
+﻿using Microsoft.AspNetCore.Authorization;
+using SimpleAPI.AllDtos.CreateDtos;
 using SimpleAPI.AllDtos.UpdateDtos;
 using SimpleAPI.Data;
 using SimpleAPI.Database.Models;
@@ -13,7 +14,6 @@ namespace SimpleAPI.Services
         public AddressService(ApplicationDbContext db)
         {
             _db = db;
-
         }
 
         public void AddAddressToPerson(AddressDto dto)
@@ -30,9 +30,8 @@ namespace SimpleAPI.Services
 
             if ((_db.Address.Any(r => r.PersonId == dto.PersonId && r.IsActive == true)) && dto.IsActive == true)
             {
-                throw new Exception();
+                throw new AlreadyActiveException("Only one address can be active at once");
             };
-         
 
             _db.Add(Address);
             _db.SaveChanges();
@@ -44,7 +43,7 @@ namespace SimpleAPI.Services
 
             if (address == null)
             {
-                throw new AlreadyActiveException("Only one address can be active at once");
+                throw new NotFoundException("Address not found");
             };
 
             address.Street = dto.Street;

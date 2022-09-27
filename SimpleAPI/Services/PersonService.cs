@@ -11,6 +11,7 @@ using SimpleAPI.Authorization;
 using SimpleAPI.Database.Models;
 using SimpleAPI.Exceptions;
 using SimpleAPI.Queries;
+using SimpleAPI.AllDtos.CreateDtos;
 
 namespace SimpleAPI.Services
 {
@@ -106,10 +107,10 @@ namespace SimpleAPI.Services
                 {
                     new Address
                     {
-                        IsActive = true,
-                        AddressTypeId = 0,
-                        City = "b",
-                        Street = "c"
+                        IsActive = dto.IsActive,
+                        AddressTypeId = dto.AddressTypeId,
+                        City = dto.City,
+                        Street = dto.Street
                     }
                 }
        
@@ -129,7 +130,7 @@ namespace SimpleAPI.Services
 
             if (person == null)
             {
-                throw new NotFoundException("People not found");
+                throw new NotFoundException("Person not found");
             }
 
             var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, person,
@@ -137,7 +138,7 @@ namespace SimpleAPI.Services
 
             if(!authorizationResult.Succeeded)
             {
-                return null;
+                throw new AuthorizationFailedException("Authorization Failed");
             }
 
             person.Name = dto.Name;
@@ -158,7 +159,7 @@ namespace SimpleAPI.Services
 
             if (person == null)
             {
-                throw new NotFoundException("People not found");
+                throw new NotFoundException("Person not found");
             }
 
             var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, person,
@@ -166,7 +167,7 @@ namespace SimpleAPI.Services
 
             if (!authorizationResult.Succeeded)
             {
-                return null;
+                throw new AuthorizationFailedException("Authorization Failed");
             }
 
             _db.People.Remove(person);

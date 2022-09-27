@@ -9,6 +9,9 @@ namespace SimpleAPI.Dtos.CreateDtos
         public int Salary { get; set; }
         public int PhoneNumber { get; set; }
         public int OccupationId { get; set; }
-        public List<AddressDto> Address { get; set; }
+        public string City { get; set; }
+        public string Street { get; set; }
+        public int AddressTypeId { get; set; }
+        public bool IsActive { get; set; }
     }
 }

@@ -21,10 +21,15 @@ namespace SimpleAPI.Middleware
                 context.Response.StatusCode = 404;
                 await context.Response.WriteAsync(notFoundException.Message);
             }
-            catch (AlreadyActiveException AlreadyActiveException)
+            catch (AlreadyActiveException alreadyActiveException)
             {
                 context.Response.StatusCode = 500;
-                await context.Response.WriteAsync(AlreadyActiveException.Message);
+                await context.Response.WriteAsync(alreadyActiveException.Message);
+            }
+            catch (AuthorizationFailedException authorizationFailedException)
+            {
+                context.Response.StatusCode = 500;
+                await context.Response.WriteAsync(authorizationFailedException.Message);
             }
             catch (Exception e)
             {
